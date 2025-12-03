@@ -7,6 +7,17 @@ interface CreatePostResponse {
   message: string
 }
 
+export interface BlogPost {
+  id: number
+  title: string
+  description: string | null
+  post_item_image: string | null
+  directory_name: string
+  created_at: string
+  updated_at: string
+  markdown_content: string
+}
+
 export async function createPost(
   title: string,
   zipFile: File,
@@ -27,6 +38,17 @@ export async function createPost(
   if (!response.ok) {
     const error = await response.json()
     throw new Error(error.detail || "Failed to create post")
+  }
+
+  return response.json()
+}
+
+export async function getBlogPost(postId: string): Promise<BlogPost> {
+  const response = await fetch(`${API_BASE_URL}/blog/${postId}`)
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || "Failed to fetch blog post")
   }
 
   return response.json()

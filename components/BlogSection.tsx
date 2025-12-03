@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import Link from "next/link"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
@@ -92,9 +93,10 @@ export default function BlogSection() {
           ) : (
             <div className="space-y-4">
               {filteredEntries.map((entry) => (
-                <div
+                <Link
                   key={entry.id}
-                  className="border-2 border-black rounded-2xl p-6 bg-gray-50 hover:bg-gray-100 transition-colors"
+                  href={`/blog/${entry.id}`}
+                  className="block border-2 border-black rounded-2xl p-6 bg-gray-50 hover:bg-gray-100 transition-colors"
                 >
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Content */}
@@ -115,7 +117,7 @@ export default function BlogSection() {
                       </div>
                     )}
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

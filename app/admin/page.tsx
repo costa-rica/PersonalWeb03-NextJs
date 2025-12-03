@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { ChevronDown, ChevronRight } from "lucide-react"
+import { ChevronDown, ChevronRight, ArrowLeft } from "lucide-react"
 import { useAppSelector, useAppDispatch } from "@/lib/hooks"
 import { toggleAdminSection } from "@/lib/features/userSlice"
 import { createPost } from "@/lib/api/blog"
@@ -115,6 +116,15 @@ export default function AdminPage() {
       <LoadingOverlay isLoading={isLoading} />
       <div className="min-h-screen p-6">
         <div className="max-w-4xl mx-auto space-y-4">
+          {/* Back Button */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 mb-6 text-gray-700 hover:text-black transition-colors font-mono"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Link>
+
           <h1 className="text-3xl font-mono font-bold mb-6">Admin Dashboard</h1>
 
           {/* Upload Blog Markdown Section */}

@@ -46,7 +46,9 @@ export default function ProjectsSection() {
           {projects.map((project, index) => (
             <div
               key={index}
-              className="border-2 border-black rounded-2xl p-6 bg-gray-50 hover:bg-gray-100 transition-colors"
+              className={`border-2 border-black rounded-2xl p-6 bg-gray-50 hover:bg-gray-100 transition-colors ${
+                index === 0 && projects.length % 2 !== 0 ? "md:col-span-2" : ""
+              }`}
             >
               <Link
                 href={project.url}

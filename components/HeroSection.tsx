@@ -9,16 +9,16 @@ interface UpToLately {
   date: string;
 }
 
+interface TogglEntry {
+  project_name: string;
+  total_hours: number;
+}
+
 export default function HeroSection() {
   const [upToLately, setUpToLately] = useState<UpToLately | null>(null);
+  const [togglTable, setTogglTable] = useState<TogglEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const recentActivity = [
-    { date: "2025-01", activity: "Built personal portfolio site" },
-    { date: "2025-01", activity: "Learning Next.js 15" },
-    { date: "2024-12", activity: "Completed side project" },
-  ];
 
   useEffect(() => {
     const fetchHeroData = async () => {
@@ -34,6 +34,7 @@ export default function HeroSection() {
 
         const data = await response.json();
         setUpToLately(data.up_to_lately);
+        setTogglTable(data.toggl_table || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load content");
         console.error("Error fetching hero section data:", err);
@@ -91,27 +92,29 @@ export default function HeroSection() {
                 </div>
               )}
 
-              <div className="border-2 border-black rounded-2xl overflow-hidden bg-gray-50">
-                <table className="w-full font-mono text-sm">
-                  <thead>
-                    <tr className="border-b-2 border-black bg-gray-100">
-                      <th className="text-left p-3 font-bold">date</th>
-                      <th className="text-left p-3 font-bold">activity</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentActivity.map((item, index) => (
-                      <tr
-                        key={index}
-                        className="border-b border-gray-300 last:border-0"
-                      >
-                        <td className="p-3 text-gray-600">{item.date}</td>
-                        <td className="p-3">{item.activity}</td>
+              {!loading && !error && togglTable.length > 0 && (
+                <div className="border-2 border-black rounded-2xl overflow-hidden bg-gray-50">
+                  <table className="w-full font-mono text-sm">
+                    <thead>
+                      <tr className="border-b-2 border-black bg-gray-100">
+                        <th className="text-left p-3 font-bold">project</th>
+                        <th className="text-left p-3 font-bold">hours</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {togglTable.map((item, index) => (
+                        <tr
+                          key={index}
+                          className="border-b border-gray-300 last:border-0"
+                        >
+                          <td className="p-3">{item.project_name}</td>
+                          <td className="p-3 text-gray-600">{item.total_hours.toFixed(1)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>

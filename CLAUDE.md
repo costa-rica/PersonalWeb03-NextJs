@@ -128,7 +128,8 @@ Each major section (Hero, Projects, Resume, Blog) is a separate component that h
 **HeroSection**: Fetches dynamic content from `/hero-section/data` API endpoint on mount. Displays:
 - Static intro content
 - `up_to_lately.text` from API (with loading/error states)
-- Hardcoded activity table (kept separate from API data)
+- Project hours table from `toggl_table` API data (project name and hours formatted to 1 decimal place)
+- Table is hidden if API fails or returns no data
 
 ### Client vs Server Components
 - Most section components are client components (`"use client"`)

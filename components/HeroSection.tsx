@@ -1,14 +1,49 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Navigation from "./Navigation";
 import Image from "next/image";
 
+interface UpToLately {
+  text: string;
+  date: string;
+}
+
 export default function HeroSection() {
+  const [upToLately, setUpToLately] = useState<UpToLately | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const recentActivity = [
     { date: "2025-01", activity: "Built personal portfolio site" },
     { date: "2025-01", activity: "Learning Next.js 15" },
     { date: "2024-12", activity: "Completed side project" },
   ];
+
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+        const response = await fetch(`${baseUrl}/hero-section/data`);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch hero data: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setUpToLately(data.up_to_lately);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load content");
+        console.error("Error fetching hero section data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHeroData();
+  }, []);
 
   return (
     <section className="h-screen flex flex-col border-2 border-black rounded-3xl overflow-hidden bg-white">
@@ -33,6 +68,29 @@ export default function HeroSection() {
               <h2 className="text-lg font-mono text-gray-800">
                 what I&apos;ve been up to lately
               </h2>
+
+              {/* Up to Lately Text Section */}
+              {loading && (
+                <div className="flex items-center gap-2 text-gray-600 font-mono text-sm">
+                  <span className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                  <span>Loading latest updates...</span>
+                </div>
+              )}
+
+              {error && (
+                <div className="p-4 border-2 border-red-500 rounded-2xl bg-red-50">
+                  <p className="text-sm text-red-700 font-mono">{error}</p>
+                </div>
+              )}
+
+              {!loading && !error && upToLately && (
+                <div className="p-4 border-2 border-black rounded-2xl bg-gray-50">
+                  <p className="text-sm text-gray-800 leading-relaxed">
+                    {upToLately.text}
+                  </p>
+                </div>
+              )}
+
               <div className="border-2 border-black rounded-2xl overflow-hidden bg-gray-50">
                 <table className="w-full font-mono text-sm">
                   <thead>

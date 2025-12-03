@@ -25,7 +25,8 @@ export default function HeroSection() {
       try {
         setLoading(true);
         setError(null);
-        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+        const baseUrl =
+          process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
         const response = await fetch(`${baseUrl}/hero-section/data`);
 
         if (!response.ok) {
@@ -47,7 +48,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="h-screen flex flex-col border-2 border-black rounded-3xl overflow-hidden bg-white">
+    <section className="min-h-screen lg:h-screen flex flex-col border-2 border-black rounded-3xl overflow-hidden bg-white">
       <Navigation />
 
       <div className="flex-1 flex flex-col lg:flex-row">
@@ -108,7 +109,9 @@ export default function HeroSection() {
                           className="border-b border-gray-300 last:border-0"
                         >
                           <td className="p-3">{item.project_name}</td>
-                          <td className="p-3 text-gray-600">{item.total_hours.toFixed(1)}</td>
+                          <td className="p-3 text-gray-600">
+                            {item.total_hours.toFixed(1)}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -120,12 +123,12 @@ export default function HeroSection() {
         </div>
 
         {/* Right side - Photo */}
-        <div className="lg:flex-1 h-64 lg:h-auto relative border-l-0 lg:border-l-2 border-t-2 lg:border-t-0 border-black order-2 lg:order-2">
+        <div className="w-3/5 mx-auto mb-8 rounded-2xl overflow-hidden aspect-[4/3] lg:w-auto lg:mx-0 lg:mb-0 lg:flex-1 lg:aspect-auto lg:h-auto relative lg:border-l-2 border-black order-2 lg:order-2">
           <Image
             src="/montmartre2021.jpg"
             alt="Nick's portrait"
             fill
-            className="object-cover"
+            className="object-cover rounded-2xl"
             priority
           />
         </div>

@@ -32,7 +32,7 @@ export default function BlogSection() {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/blog`)
         if (response.ok) {
           const data = await response.json()
-          setBlogEntries(data.slice(0, 3)) // Get last 3 entries
+          setBlogEntries(data) // Load all blog entries
         } else {
           setError(true)
         }

@@ -88,6 +88,41 @@ export default function AdminPage() {
     }
   }, [token, router])
 
+  // Fetch blog posts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const posts = await getAllBlogPosts()
+        setBlogPosts(posts)
+      } catch (err) {
+        console.error("Failed to fetch blog posts:", err)
+      }
+    }
+
+    if (token) {
+      fetchPosts()
+    }
+  }, [token])
+
+  // Filter and paginate posts
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return blogPosts
+
+    const query = searchQuery.toLowerCase()
+    return blogPosts.filter(
+      (post) =>
+        post.title.toLowerCase().includes(query) ||
+        post.id.toString().includes(query)
+    )
+  }, [blogPosts, searchQuery])
+
+  const totalPages = itemsPerPage === -1 ? 1 : Math.ceil(filteredPosts.length / itemsPerPage)
+  const paginatedPosts = useMemo(() => {
+    if (itemsPerPage === -1) return filteredPosts
+    const startIndex = (currentPage - 1) * itemsPerPage
+    return filteredPosts.slice(startIndex, startIndex + itemsPerPage)
+  }, [filteredPosts, currentPage, itemsPerPage])
+
   // Show nothing while checking auth or redirecting
   if (!token) {
     return null
@@ -99,6 +134,61 @@ export default function AdminPage() {
       type: "success",
       title: "",
       message: "",
+    })
+  }
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModal({
+      isOpen: false,
+      postId: null,
+      postTitle: "",
+    })
+  }
+
+  const handleDeleteClick = (post: BlogListItem) => {
+    setDeleteModal({
+      isOpen: true,
+      postId: post.id,
+      postTitle: post.title,
+    })
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.postId) return
+
+    setIsLoading(true)
+    try {
+      await deleteBlogPost(deleteModal.postId, token)
+
+      // Refresh the blog list
+      const posts = await getAllBlogPosts()
+      setBlogPosts(posts)
+
+      setModalState({
+        isOpen: true,
+        type: "success",
+        title: "Success",
+        message: "Blog post deleted successfully!",
+      })
+    } catch (err) {
+      setModalState({
+        isOpen: true,
+        type: "error",
+        title: "Error",
+        message: err instanceof Error ? err.message : "Failed to delete blog post",
+      })
+    } finally {
+      setIsLoading(false)
+      handleCloseDeleteModal()
+    }
+  }
+
+  const handleModifyClick = () => {
+    setModalState({
+      isOpen: true,
+      type: "success",
+      title: "Coming Soon",
+      message: "Blog post modification feature will be available soon!",
     })
   }
 
@@ -206,6 +296,163 @@ export default function AdminPage() {
               </div>
             </CollapsibleContent>
           </Collapsible>
+
+          {/* Manage Blog Posts Section */}
+          <Collapsible
+            open={isManageOpen}
+            onOpenChange={() => dispatch(toggleAdminSection("manage-blogs"))}
+            className="border-2 border-black rounded-lg"
+          >
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                <h2 className="text-xl font-mono font-bold">Manage Blog Posts</h2>
+                {isManageOpen ? (
+                  <ChevronDown className="h-6 w-6" />
+                ) : (
+                  <ChevronRight className="h-6 w-6" />
+                )}
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="border-t-2 border-black p-6">
+                {/* Search and Items Per Page */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+                    <Input
+                      type="text"
+                      placeholder="Search by ID or title..."
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value)
+                        setCurrentPage(1)
+                      }}
+                      className="pl-10 font-mono"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label className="font-mono text-sm whitespace-nowrap">
+                      Show:
+                    </Label>
+                    <select
+                      value={itemsPerPage}
+                      onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value))
+                        setCurrentPage(1)
+                      }}
+                      className="border-2 border-black rounded-lg px-3 py-2 font-mono text-sm"
+                    >
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={-1}>All</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Table Container with Scroll */}
+                <div className="border-2 border-black rounded-lg overflow-hidden">
+                  <div className="max-h-96 overflow-y-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-100 sticky top-0 border-b-2 border-black">
+                        <tr>
+                          <th className="px-4 py-3 text-left font-mono font-bold border-r-2 border-black w-20">
+                            ID
+                          </th>
+                          <th className="px-4 py-3 text-left font-mono font-bold border-r-2 border-black">
+                            Title
+                          </th>
+                          <th className="px-4 py-3 text-center font-mono font-bold w-40">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedPosts.length === 0 ? (
+                          <tr>
+                            <td
+                              colSpan={3}
+                              className="px-4 py-8 text-center text-gray-600 font-mono"
+                            >
+                              {searchQuery
+                                ? "No posts found"
+                                : "No blog posts yet"}
+                            </td>
+                          </tr>
+                        ) : (
+                          paginatedPosts.map((post) => (
+                            <tr
+                              key={post.id}
+                              className="border-b border-gray-300 hover:bg-gray-50 transition-colors"
+                            >
+                              <td className="px-4 py-3 font-mono border-r border-gray-300">
+                                {post.id}
+                              </td>
+                              <td className="px-4 py-3 border-r border-gray-300">
+                                {post.title}
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex justify-center gap-2">
+                                  <Button
+                                    onClick={() => handleModifyClick()}
+                                    size="sm"
+                                    variant="outline"
+                                    className="font-mono"
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleDeleteClick(post)}
+                                    size="sm"
+                                    variant="outline"
+                                    className="font-mono text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Pagination */}
+                {itemsPerPage !== -1 && totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="text-sm text-gray-600 font-mono">
+                      Page {currentPage} of {totalPages} ({filteredPosts.length}{" "}
+                      total)
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        size="sm"
+                        variant="outline"
+                        className="font-mono"
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          setCurrentPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        disabled={currentPage === totalPages}
+                        size="sm"
+                        variant="outline"
+                        className="font-mono"
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </div>
 
@@ -216,6 +463,18 @@ export default function AdminPage() {
           message={modalState.message}
           variant={modalState.type}
           onClose={handleCloseModal}
+        />
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={deleteModal.isOpen} onClose={handleCloseDeleteModal}>
+        <ModalInformationYesOrNo
+          title="Delete Blog Post?"
+          message={`Are you sure you want to delete "${deleteModal.postTitle}"? This action cannot be undone.`}
+          onYes={handleDeleteConfirm}
+          onClose={handleCloseDeleteModal}
+          yesButtonText="Yes, Delete"
+          yesButtonStyle="danger"
         />
       </Modal>
     </>

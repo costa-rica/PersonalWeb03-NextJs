@@ -22,6 +22,7 @@ import LoadingOverlay from "@/components/LoadingOverlay"
 import Modal from "@/components/ui/modal"
 import ModalInformationOk from "@/components/ui/modal/ModalInformationOk"
 import ModalInformationYesOrNo from "@/components/ui/modal/ModalInformationYesOrNo"
+import DatabaseManagementSection from "@/components/admin/DatabaseManagementSection"
 
 const uploadSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -453,6 +454,12 @@ export default function AdminPage() {
               </div>
             </CollapsibleContent>
           </Collapsible>
+
+          {/* Database Management Section */}
+          <DatabaseManagementSection
+            token={token}
+            onLoadingChange={setIsLoading}
+          />
         </div>
       </div>
 

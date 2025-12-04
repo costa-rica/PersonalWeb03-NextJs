@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -122,6 +123,15 @@ export default function RegisterPage() {
           >
             {isLoading ? "Registering..." : "Register"}
           </Button>
+
+          <div className="text-center">
+            <Link
+              href="/forgot-password"
+              className="text-sm font-mono text-gray-700 hover:text-black transition-colors"
+            >
+              Forgot Password?
+            </Link>
+          </div>
         </form>
       </div>
     </div>

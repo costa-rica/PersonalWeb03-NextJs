@@ -18,6 +18,16 @@ export interface BlogPost {
   markdown_content: string
 }
 
+export interface BlogListItem {
+  id: number
+  title: string
+}
+
+interface DeletePostResponse {
+  message: string
+  id: number
+}
+
 export async function createPost(
   title: string,
   zipFile: File,
@@ -49,6 +59,36 @@ export async function getBlogPost(postId: string): Promise<BlogPost> {
   if (!response.ok) {
     const error = await response.json()
     throw new Error(error.detail || "Failed to fetch blog post")
+  }
+
+  return response.json()
+}
+
+export async function getAllBlogPosts(): Promise<BlogListItem[]> {
+  const response = await fetch(`${API_BASE_URL}/blog`)
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || "Failed to fetch blog posts")
+  }
+
+  return response.json()
+}
+
+export async function deleteBlogPost(
+  postId: number,
+  token: string
+): Promise<DeletePostResponse> {
+  const response = await fetch(`${API_BASE_URL}/blog/${postId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || "Failed to delete blog post")
   }
 
   return response.json()

@@ -1,15 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { ChevronDown, ChevronRight, ArrowLeft } from "lucide-react"
+import { ChevronDown, ChevronRight, ArrowLeft, Search, Trash2, Edit } from "lucide-react"
 import { useAppSelector, useAppDispatch } from "@/lib/hooks"
 import { toggleAdminSection } from "@/lib/features/userSlice"
-import { createPost } from "@/lib/api/blog"
+import { createPost, getAllBlogPosts, deleteBlogPost, type BlogListItem } from "@/lib/api/blog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,6 +21,7 @@ import {
 import LoadingOverlay from "@/components/LoadingOverlay"
 import Modal from "@/components/ui/modal"
 import ModalInformationOk from "@/components/ui/modal/ModalInformationOk"
+import ModalInformationYesOrNo from "@/components/ui/modal/ModalInformationYesOrNo"
 
 const uploadSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -54,6 +55,22 @@ export default function AdminPage() {
   })
 
   const isUploadOpen = adminSections["upload-blog"] || false
+  const isManageOpen = adminSections["manage-blogs"] || false
+
+  // Blog management state
+  const [blogPosts, setBlogPosts] = useState<BlogListItem[]>([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean
+    postId: number | null
+    postTitle: string
+  }>({
+    isOpen: false,
+    postId: null,
+    postTitle: "",
+  })
 
   const {
     register,

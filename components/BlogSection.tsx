@@ -7,10 +7,12 @@ import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 
 interface BlogEntry {
-  id: string
+  id: number
   title: string
-  description?: string
-  image?: string
+  description: string | null
+  post_item_image: string | null
+  url: string | null
+  date: string | null
 }
 
 export default function BlogSection() {
@@ -54,9 +56,22 @@ export default function BlogSection() {
     return blogEntries.filter(
       (entry) =>
         entry.title.toLowerCase().includes(query) ||
-        (entry.description && entry.description.toLowerCase().includes(query)),
+        (entry.description && entry.description.toLowerCase().includes(query))
     )
   }, [blogEntries, searchQuery])
+
+  // Helper function to get image URL based on post_item_image format
+  const getImageUrl = (post_item_image: string | null) => {
+    if (!post_item_image) return null
+
+    // If no "/" in the image path, it's from the icons directory
+    if (!post_item_image.includes("/")) {
+      return `/blog/icons/${post_item_image}`
+    }
+
+    // If "/" exists, it's from the posts directory (format: ####/filename)
+    return `/posts/${post_item_image}`
+  }
 
   return (
     <section id="blog" className="h-screen py-12 px-6">
@@ -92,33 +107,41 @@ export default function BlogSection() {
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredEntries.map((entry) => (
-                <Link
-                  key={entry.id}
-                  href={`/blog/${entry.id}`}
-                  className="block border-2 border-black rounded-2xl p-6 bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex flex-col md:flex-row gap-6">
-                    {/* Content */}
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold font-mono mb-2 text-black">{entry.title}</h3>
-                      {entry.description && <p className="text-gray-700 leading-relaxed">{entry.description}</p>}
-                    </div>
+              {filteredEntries.map((entry) => {
+                const imageUrl = getImageUrl(entry.post_item_image)
 
-                    {/* Image */}
-                    {entry.image && (
-                      <div className="relative w-full md:w-48 h-32 rounded-xl overflow-hidden border-2 border-black flex-shrink-0">
-                        <Image
-                          src={entry.image || "/placeholder.svg"}
-                          alt={entry.title}
-                          fill
-                          className="object-cover"
-                        />
+                return (
+                  <Link
+                    key={entry.id}
+                    href={`/blog/${entry.id}`}
+                    className="block border-2 border-black rounded-2xl p-6 bg-gray-50 hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex flex-col md:flex-row gap-6">
+                      {/* Content */}
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold font-mono mb-2 text-black">{entry.title}</h3>
+                        {entry.description && (
+                          <p className="text-gray-700 leading-relaxed font-mono text-sm">
+                            {entry.description}
+                          </p>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </Link>
-              ))}
+
+                      {/* Image */}
+                      {imageUrl && (
+                        <div className="relative w-full md:w-48 h-32 rounded-xl overflow-hidden border-2 border-black flex-shrink-0">
+                          <Image
+                            src={imageUrl}
+                            alt={entry.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           )}
         </div>

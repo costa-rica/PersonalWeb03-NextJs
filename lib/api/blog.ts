@@ -12,20 +12,46 @@ export interface BlogPost {
   title: string
   description: string | null
   post_item_image: string | null
-  directory_name: string
+  directory_name: string | null
+  date_shown_on_blog: string | null
+  link_to_external_post: string | null
   created_at: string
   updated_at: string
-  markdown_content: string
+  markdown_content: string | null
 }
 
 export interface BlogListItem {
   id: number
   title: string
+  description: string | null
+  post_item_image: string | null
+  url: string | null
+  date: string | null
 }
 
 interface DeletePostResponse {
   message: string
   id: number
+}
+
+interface GetIconsResponse {
+  icons: string[]
+}
+
+interface UpdatePostRequest {
+  title?: string
+  description?: string
+  post_item_image?: string
+  date_shown_on_blog?: string
+  link_to_external_post?: string
+}
+
+interface UpdatePostResponse {
+  id: number
+  title: string
+  description: string | null
+  post_item_image: string | null
+  message: string
 }
 
 export async function createPost(
@@ -89,6 +115,45 @@ export async function deleteBlogPost(
   if (!response.ok) {
     const error = await response.json()
     throw new Error(error.detail || "Failed to delete blog post")
+  }
+
+  return response.json()
+}
+
+export async function getBlogIcons(token: string): Promise<string[]> {
+  const response = await fetch(`${API_BASE_URL}/blog/icons`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || "Failed to fetch blog icons")
+  }
+
+  const data: GetIconsResponse = await response.json()
+  return data.icons
+}
+
+export async function updateBlogPost(
+  postId: number,
+  updates: UpdatePostRequest,
+  token: string
+): Promise<UpdatePostResponse> {
+  const response = await fetch(`${API_BASE_URL}/update-post/${postId}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updates),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || "Failed to update blog post")
   }
 
   return response.json()

@@ -22,6 +22,7 @@ import LoadingOverlay from "@/components/LoadingOverlay"
 import Modal from "@/components/ui/modal"
 import ModalInformationOk from "@/components/ui/modal/ModalInformationOk"
 import ModalInformationYesOrNo from "@/components/ui/modal/ModalInformationYesOrNo"
+import ModalUpdatePost from "@/components/ui/modal/ModalUpdatePost"
 import DatabaseManagementSection from "@/components/admin/DatabaseManagementSection"
 
 const uploadSchema = z.object({
@@ -71,6 +72,13 @@ export default function AdminPage() {
     isOpen: false,
     postId: null,
     postTitle: "",
+  })
+  const [updateModal, setUpdateModal] = useState<{
+    isOpen: boolean
+    postId: number | null
+  }>({
+    isOpen: false,
+    postId: null,
   })
 
   const {
@@ -146,6 +154,13 @@ export default function AdminPage() {
     })
   }
 
+  const handleCloseUpdateModal = () => {
+    setUpdateModal({
+      isOpen: false,
+      postId: null,
+    })
+  }
+
   const handleDeleteClick = (post: BlogListItem) => {
     setDeleteModal({
       isOpen: true,
@@ -184,13 +199,21 @@ export default function AdminPage() {
     }
   }
 
-  const handleModifyClick = () => {
-    setModalState({
+  const handleModifyClick = (post: BlogListItem) => {
+    setUpdateModal({
       isOpen: true,
-      type: "success",
-      title: "Coming Soon",
-      message: "Blog post modification feature will be available soon!",
+      postId: post.id,
     })
+  }
+
+  const handleUpdateSuccess = async () => {
+    // Refresh the blog list after successful update
+    try {
+      const posts = await getAllBlogPosts()
+      setBlogPosts(posts)
+    } catch (err) {
+      console.error("Failed to refresh blog posts:", err)
+    }
   }
 
   const onSubmit = async (data: UploadFormData) => {
@@ -395,7 +418,7 @@ export default function AdminPage() {
                               <td className="px-4 py-3">
                                 <div className="flex justify-center gap-2">
                                   <Button
-                                    onClick={() => handleModifyClick()}
+                                    onClick={() => handleModifyClick(post)}
                                     size="sm"
                                     variant="outline"
                                     className="font-mono"
@@ -484,6 +507,18 @@ export default function AdminPage() {
           yesButtonStyle="danger"
         />
       </Modal>
+
+      {/* Update Blog Post Modal */}
+      {updateModal.postId && (
+        <Modal isOpen={updateModal.isOpen} onClose={handleCloseUpdateModal}>
+          <ModalUpdatePost
+            postId={updateModal.postId}
+            token={token}
+            onClose={handleCloseUpdateModal}
+            onSuccess={handleUpdateSuccess}
+          />
+        </Modal>
+      )}
     </>
   )
 }

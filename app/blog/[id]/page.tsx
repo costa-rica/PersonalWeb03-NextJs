@@ -16,7 +16,8 @@ export default function BlogDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -25,7 +26,9 @@ export default function BlogDetailPage() {
         const data = await getBlogPost(postId);
         setPost(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load blog post");
+        setError(
+          err instanceof Error ? err.message : "Failed to load blog post"
+        );
       } finally {
         setIsLoading(false);
       }
@@ -47,7 +50,9 @@ export default function BlogDetailPage() {
     return (
       <div className="min-h-screen p-6 flex items-center justify-center">
         <div className="border-2 border-black rounded-3xl p-12 bg-white max-w-2xl text-center">
-          <h1 className="text-2xl font-bold font-mono mb-4 text-red-600">Error</h1>
+          <h1 className="text-2xl font-bold font-mono mb-4 text-red-600">
+            Error
+          </h1>
           <p className="text-gray-700 mb-6">{error}</p>
           <Link
             href="/#blog"
@@ -83,7 +88,9 @@ export default function BlogDetailPage() {
           <div className="border-2 border-black rounded-3xl p-6 lg:p-12 bg-white">
             {/* Header Section */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold font-mono mb-4">{post.title}</h1>
+              <h1 className="text-4xl font-bold font-mono mb-4">
+                {post.title}
+              </h1>
 
               {/* Metadata */}
               <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
@@ -92,23 +99,6 @@ export default function BlogDetailPage() {
                   <span>Updated: {formatDate(post.updated_at)}</span>
                 )}
               </div>
-
-              {/* Description */}
-              {post.description && (
-                <p className="text-lg text-gray-700 mb-6">{post.description}</p>
-              )}
-
-              {/* Thumbnail Image */}
-              {post.post_item_image && (
-                <div className="relative w-full h-64 md:h-96 rounded-xl overflow-hidden border-2 border-black mb-6">
-                  <Image
-                    src={`${API_BASE_URL}/posts/${post.directory_name}/${post.post_item_image}`}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
 
               <hr className="border-t-2 border-black" />
             </div>

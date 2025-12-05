@@ -131,12 +131,12 @@ export default function BlogSection() {
 
                       {/* Image */}
                       {imageUrl && (
-                        <div className="relative w-full md:w-48 h-32 rounded-xl overflow-hidden border-2 border-black flex-shrink-0">
+                        <div className="relative w-full md:w-48 h-32 rounded-xl overflow-hidden flex-shrink-0">
                           <Image
                             src={imageUrl}
                             alt={entry.title}
                             fill
-                            className="object-cover"
+                            className="object-contain"
                           />
                         </div>
                       )}

@@ -118,11 +118,25 @@ export default function BlogSection() {
             <div className="space-y-4">
               {filteredEntries.map((entry) => {
                 const imageUrl = getImageUrl(entry.post_item_image);
+                const isExternalLink = !!entry.url;
+                const linkHref = entry.url || `/blog/${entry.id}`;
+
+                // Use <a> tag for external links, Link component for internal routes
+                const LinkComponent = isExternalLink ? "a" : Link;
+                const linkProps = isExternalLink
+                  ? {
+                      href: linkHref,
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                    }
+                  : {
+                      href: linkHref,
+                    };
 
                 return (
-                  <Link
+                  <LinkComponent
                     key={entry.id}
-                    href={`/blog/${entry.id}`}
+                    {...linkProps}
                     className="block border-2 border-black rounded-2xl p-6 bg-gray-50 hover:bg-gray-100 transition-colors"
                   >
                     <div className="flex flex-col md:flex-row gap-6">
@@ -138,19 +152,34 @@ export default function BlogSection() {
                         )}
                       </div>
 
-                      {/* Image */}
-                      {imageUrl && (
-                        <div className="relative w-full md:w-48 h-32 rounded-xl overflow-hidden flex-shrink-0">
-                          <Image
-                            src={imageUrl}
-                            alt={entry.title}
-                            fill
-                            className="object-contain"
-                          />
+                      {/* Image and Date */}
+                      {(imageUrl || entry.date) && (
+                        <div className="flex flex-col gap-2 items-center md:items-end flex-shrink-0">
+                          {/* Date */}
+                          {entry.date && (
+                            <p className="text-sm font-mono text-gray-600">
+                              {new Date(entry.date).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </p>
+                          )}
+                          {/* Image */}
+                          {imageUrl && (
+                            <div className="relative w-full md:w-48 h-32 rounded-xl overflow-hidden">
+                              <Image
+                                src={imageUrl}
+                                alt={entry.title}
+                                fill
+                                className="object-contain"
+                              />
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
-                  </Link>
+                  </LinkComponent>
                 );
               })}
             </div>

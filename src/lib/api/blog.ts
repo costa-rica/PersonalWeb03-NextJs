@@ -54,6 +54,22 @@ interface UpdatePostResponse {
   message: string
 }
 
+interface CreatePostLinkRequest {
+  title: string
+  url: string
+  icon?: string
+  description?: string
+  date_shown_on_blog?: string
+}
+
+interface CreatePostLinkResponse {
+  id: number
+  title: string
+  link_to_external_post: string
+  post_item_image: string | null
+  message: string
+}
+
 export async function createPost(
   title: string,
   zipFile: File,
@@ -154,6 +170,27 @@ export async function updateBlogPost(
   if (!response.ok) {
     const error = await response.json()
     throw new Error(error.detail || "Failed to update blog post")
+  }
+
+  return response.json()
+}
+
+export async function createBlogPostLink(
+  data: CreatePostLinkRequest,
+  token: string
+): Promise<CreatePostLinkResponse> {
+  const response = await fetch(`${API_BASE_URL}/blog/create-post-link`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || "Failed to create blog post link")
   }
 
   return response.json()

@@ -36,6 +36,7 @@ import ModalInformationOk from "@/components/ui/modal/ModalInformationOk";
 import ModalInformationYesOrNo from "@/components/ui/modal/ModalInformationYesOrNo";
 import ModalUpdatePost from "@/components/ui/modal/ModalUpdatePost";
 import DatabaseManagementSection from "@/components/admin/DatabaseManagementSection";
+import CreateBlogPostLinkSection from "@/components/admin/CreateBlogPostLinkSection";
 
 const uploadSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -503,6 +504,13 @@ export default function AdminPage() {
               </div>
             </CollapsibleContent>
           </Collapsible>
+
+          {/* Create Blog Post Link Section */}
+          <CreateBlogPostLinkSection
+            token={token}
+            onLoadingChange={setIsLoading}
+            onSuccess={handleUpdateSuccess}
+          />
 
           {/* Database Management Section */}
           <DatabaseManagementSection

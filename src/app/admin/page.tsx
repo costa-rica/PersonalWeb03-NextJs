@@ -14,14 +14,14 @@ import {
   Trash2,
   Edit,
 } from "lucide-react";
-import { useAppSelector, useAppDispatch } from "@/src/lib/hooks";
-import { toggleAdminSection } from "@/src/lib/features/userSlice";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { toggleAdminSection } from "@/lib/features/userSlice";
 import {
   createPost,
   getAllBlogPosts,
   deleteBlogPost,
   type BlogListItem,
-} from "@/src/lib/api/blog";
+} from "@/lib/api/blog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

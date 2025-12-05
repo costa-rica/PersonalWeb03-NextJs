@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/src/lib/hooks";
-import { clearUser } from "@/src/lib/features/userSlice";
+import { useAppDispatch } from "@/lib/hooks";
+import { clearUser } from "@/lib/features/userSlice";
 
 export default function LogoutPage() {
   const router = useRouter();

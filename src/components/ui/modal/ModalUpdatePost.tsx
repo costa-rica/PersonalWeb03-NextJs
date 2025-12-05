@@ -4,14 +4,14 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { Textarea } from "@/src/components/ui/textarea";
-import { getBlogPost, getBlogIcons, updateBlogPost } from "@/src/lib/api/blog";
-import LoadingOverlay from "@/src/components/LoadingOverlay";
-import Modal from "@/src/components/ui/modal";
-import ModalInformationOk from "@/src/components/ui/modal/ModalInformationOk";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { getBlogPost, getBlogIcons, updateBlogPost } from "@/lib/api/blog";
+import LoadingOverlay from "@/components/LoadingOverlay";
+import Modal from "@/components/ui/modal";
+import ModalInformationOk from "@/components/ui/modal/ModalInformationOk";
 
 const updatePostSchema = z.object({
   title: z.string().min(1, "Title is required"),

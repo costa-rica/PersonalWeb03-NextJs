@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useAppSelector } from "@/src/lib/hooks";
+import { useAppSelector } from "@/lib/hooks";
 
 export default function Navigation() {
   const token = useAppSelector((state) => state.user.token);

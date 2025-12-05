@@ -7,12 +7,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { loginUser } from "@/src/lib/api/auth";
-import { useAppDispatch } from "@/src/lib/hooks";
-import { setUser } from "@/src/lib/features/userSlice";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { loginUser } from "@/lib/api/auth";
+import { useAppDispatch } from "@/lib/hooks";
+import { setUser } from "@/lib/features/userSlice";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),

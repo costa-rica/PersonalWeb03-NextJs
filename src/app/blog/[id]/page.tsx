@@ -5,9 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
-import { getBlogPost, type BlogPost } from "@/src/lib/api/blog";
-import MarkdownRenderer from "@/src/components/MarkdownRenderer";
-import LoadingOverlay from "@/src/components/LoadingOverlay";
+import { getBlogPost, type BlogPost } from "@/lib/api/blog";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 export default function BlogDetailPage() {
   const params = useParams();

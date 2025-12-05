@@ -7,13 +7,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { forgotPassword } from "@/src/lib/api/auth";
-import LoadingOverlay from "@/src/components/LoadingOverlay";
-import Modal from "@/src/components/ui/modal";
-import ModalInformationOk from "@/src/components/ui/modal/ModalInformationOk";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { forgotPassword } from "@/lib/api/auth";
+import LoadingOverlay from "@/components/LoadingOverlay";
+import Modal from "@/components/ui/modal";
+import ModalInformationOk from "@/components/ui/modal/ModalInformationOk";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),

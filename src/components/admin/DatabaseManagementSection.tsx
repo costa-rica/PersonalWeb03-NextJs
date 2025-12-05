@@ -5,19 +5,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ChevronDown, ChevronRight, Download, Upload } from "lucide-react";
-import { useAppSelector, useAppDispatch } from "@/src/lib/hooks";
-import { toggleAdminSection } from "@/src/lib/features/userSlice";
-import { backupDatabase, restoreDatabase } from "@/src/lib/api/admin";
-import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { toggleAdminSection } from "@/lib/features/userSlice";
+import { backupDatabase, restoreDatabase } from "@/lib/api/admin";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/src/components/ui/collapsible";
-import Modal from "@/src/components/ui/modal";
-import ModalInformationOk from "@/src/components/ui/modal/ModalInformationOk";
+} from "@/components/ui/collapsible";
+import Modal from "@/components/ui/modal";
+import ModalInformationOk from "@/components/ui/modal/ModalInformationOk";
 
 const restoreSchema = z.object({
   zipFile: z

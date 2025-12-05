@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Input } from "@/src/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
 interface BlogEntry {

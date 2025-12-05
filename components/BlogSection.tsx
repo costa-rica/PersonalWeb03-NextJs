@@ -64,13 +64,15 @@ export default function BlogSection() {
   const getImageUrl = (post_item_image: string | null) => {
     if (!post_item_image) return null
 
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
+
     // If no "/" in the image path, it's from the icons directory
     if (!post_item_image.includes("/")) {
-      return `/blog/icons/${post_item_image}`
+      return `${apiBaseUrl}/blog/icons/${post_item_image}`
     }
 
     // If "/" exists, it's from the posts directory (format: ####/filename)
-    return `/posts/${post_item_image}`
+    return `${apiBaseUrl}/posts/${post_item_image}`
   }
 
   return (

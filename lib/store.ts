@@ -1,21 +1,25 @@
-import { configureStore } from "@reduxjs/toolkit"
+import { configureStore, combineReducers } from "@reduxjs/toolkit"
 import { persistStore, persistReducer } from "redux-persist"
 import storage from "redux-persist/lib/storage"
 import userReducer from "./features/userSlice"
 
+// Combine all reducers
+const rootReducer = combineReducers({
+  user: userReducer,
+})
+
+// Persist configuration
 const persistConfig = {
   key: "root",
   storage,
   whitelist: ["user"], // Only persist user slice
 }
 
-const persistedReducer = persistReducer(persistConfig, userReducer)
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const makeStore = () => {
   const store = configureStore({
-    reducer: {
-      user: persistedReducer,
-    },
+    reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: {

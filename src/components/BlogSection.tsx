@@ -52,14 +52,28 @@ export default function BlogSection() {
   }, []);
 
   const filteredEntries = useMemo(() => {
-    if (!searchQuery.trim()) return blogEntries;
+    let entries = blogEntries;
 
-    const query = searchQuery.toLowerCase();
-    return blogEntries.filter(
-      (entry) =>
-        entry.title.toLowerCase().includes(query) ||
-        (entry.description && entry.description.toLowerCase().includes(query))
-    );
+    // Filter by search query if present
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      entries = entries.filter(
+        (entry) =>
+          entry.title.toLowerCase().includes(query) ||
+          (entry.description && entry.description.toLowerCase().includes(query))
+      );
+    }
+
+    // Sort by date in descending order (most recent first)
+    return entries.sort((a, b) => {
+      // Handle null dates - put them at the end
+      if (!a.date && !b.date) return 0;
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+
+      // Sort by date descending
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
   }, [blogEntries, searchQuery]);
 
   // Helper function to get image URL based on post_item_image format

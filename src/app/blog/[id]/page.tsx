@@ -94,10 +94,7 @@ export default function BlogDetailPage() {
 
               {/* Metadata */}
               <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
-                <span>Created: {formatDate(post.created_at)}</span>
-                {post.updated_at !== post.created_at && (
-                  <span>Updated: {formatDate(post.updated_at)}</span>
-                )}
+                <span>{formatDate(post.date_shown_on_blog)}</span>
               </div>
 
               <hr className="border-t-2 border-black" />

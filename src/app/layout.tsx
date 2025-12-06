@@ -9,25 +9,38 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Nick's Portfolio",
-  description: "Personal portfolio and blog by Nick",
+  title: "Nick's Page",
+  description: "Nick's personal page",
   generator: "v0.app",
   icons: {
     icon: [
+      // {
+      //   url: "/icon-light-32x32.png",
+      //   media: "(prefers-color-scheme: light)",
+      // },
+      // {
+      //   url: "/icon-dark-32x32.png",
+      //   media: "(prefers-color-scheme: dark)",
+      // },
       {
-        url: "/icon-light-32x32.png",
+        url: "/favicon-32x32.png",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/icon-dark-32x32.png",
+        url: "/favicon-32x32.png",
         media: "(prefers-color-scheme: dark)",
       },
+      // {
+      //   url: "/icon.svg",
+      //   type: "image/svg+xml",
+      // },
       {
-        url: "/icon.svg",
-        type: "image/svg+xml",
+        url: "/favicon.ico",
+        type: "image/x-icon",
       },
     ],
-    apple: "/apple-icon.png",
+    // apple: "/apple-icon.png",
+    apple: "/apple-icon-nr.png",
   },
 };
 

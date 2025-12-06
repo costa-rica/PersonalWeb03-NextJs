@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAppSelector } from "@/lib/hooks";
+import Image from "next/image";
 
 export default function Navigation() {
   const token = useAppSelector((state) => state.user.token);
@@ -9,7 +10,7 @@ export default function Navigation() {
   return (
     <nav className="flex items-center justify-between px-6 py-4 border-b-2 border-black">
       <Link href="/" className="text-xl font-mono font-bold">
-        nick.dev
+        <Image src="/logo06.png" alt="Nick logo" width={60} height={60} />
       </Link>
       <div className="flex gap-6 font-mono text-sm">
         <Link

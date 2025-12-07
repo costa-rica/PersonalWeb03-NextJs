@@ -15,11 +15,12 @@ curl -X GET http://localhost:8000/hero-section/data
 **Response Examples:**
 
 Success (200 OK):
+
 ```json
 {
   "up_to_lately": {
     "text": "Working on PersonalWeb03 API development and documentation improvements. Implemented new hero section endpoint with Toggl integration.",
-    "date": "2025-12-01"
+    "datetime_summary": "2025-12-07 13:12:32"
   },
   "toggl_table": [
     {
@@ -39,6 +40,7 @@ Success (200 OK):
 ```
 
 Error - Files not found (404 Not Found):
+
 ```json
 {
   "detail": "Activities summary file not found"
@@ -46,6 +48,7 @@ Error - Files not found (404 Not Found):
 ```
 
 Error - Server error (500 Internal Server Error):
+
 ```json
 {
   "detail": "Error reading project time entries"
@@ -54,14 +57,15 @@ Error - Server error (500 Internal Server Error):
 
 **Response Fields:**
 
-- `up_to_lately.text` - Content from `last-7-days-activities-summary.md`
-- `up_to_lately.date` - Collection date from CSV data
+- `up_to_lately.text` - Summary content from `left-off-7-day-summary.json` (`summary` field)
+- `up_to_lately.datetime_summary` - Full datetime from JSON (`datetime_summary` field)
 - `toggl_table` - Array of project entries sorted alphabetically by project name
 - `toggl_table[].project_name` - Name of the project
 - `toggl_table[].total_hours` - Total hours spent on project
 
 **Behavior:**
-- Reads text from `{PATH_PROJECT_RESOURCES}/hero-section/last-7-days-activities-summary.md`
-- Parses CSV from `{PATH_PROJECT_RESOURCES}/hero-section/project_time_entries.csv`
+
+- Reads summary and date from `{PATH_PROJECT_RESOURCES}/services-data/left-off-7-day-summary.json`
+- Parses CSV from `{PATH_PROJECT_RESOURCES}/services-data/project_time_entries.csv`
 - Projects are automatically sorted alphabetically by name
-- Date extracted from CSV's `datetime_collected` field (first row)
+- CSV uses `hours_worked` column for time tracking data

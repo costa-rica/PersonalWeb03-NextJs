@@ -6,7 +6,7 @@ import Image from "next/image";
 
 interface UpToLately {
   text: string;
-  date: string;
+  datetime_summary: string;
 }
 
 interface TogglEntry {
@@ -15,10 +15,19 @@ interface TogglEntry {
 }
 
 export default function HeroSection() {
+  // Configuration: Number of words to show before truncating
+  const TRUNCATE_WORD_COUNT = 35;
+  
   const [upToLately, setUpToLately] = useState<UpToLately | null>(null);
   const [togglTable, setTogglTable] = useState<TogglEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Helper function to count words
+  const countWords = (text: string): number => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
 
   useEffect(() => {
     const fetchHeroData = async () => {
@@ -69,6 +78,11 @@ export default function HeroSection() {
             <div className="space-y-4 order-3 lg:order-2">
               <h2 className="text-lg font-mono text-gray-800">
                 what I&apos;ve been up to lately
+                {upToLately && (
+                  <span className="text-sm text-gray-500 font-normal ml-2">
+                    (updated {upToLately.datetime_summary})
+                  </span>
+                )}
               </h2>
 
               {/* Up to Lately Text Section */}
@@ -88,26 +102,55 @@ export default function HeroSection() {
               {!loading && !error && upToLately && (
                 <div className="p-4 border-2 border-black rounded-2xl bg-gray-50">
                   <div className="text-sm text-gray-800 leading-relaxed space-y-2">
-                    {upToLately.text.split('\n').map((line, index) => {
-                      // Check if line is a bullet point
-                      if (line.trim().startsWith('- ')) {
-                        return (
-                          <ul key={index} className="list-disc list-inside">
-                            <li className="text-gray-800">
-                              {line.trim().substring(2)}
-                            </li>
-                          </ul>
-                        );
-                      } else if (line.trim()) {
-                        // Regular non-empty line
-                        return (
-                          <p key={index} className="text-gray-800">
-                            {line}
-                          </p>
-                        );
+                    {(() => {
+                      const wordCount = countWords(upToLately.text);
+                      const shouldTruncate = wordCount > TRUNCATE_WORD_COUNT;
+                      
+                      // Split text into lines
+                      const lines = upToLately.text.split('\n');
+                      
+                      // If we should truncate and not expanded, get first 50 words
+                      let displayLines = lines;
+                      if (shouldTruncate && !isExpanded) {
+                        const words = upToLately.text.split(/\s+/);
+                        const truncatedText = words.slice(0, TRUNCATE_WORD_COUNT).join(' ');
+                        displayLines = truncatedText.split('\n');
                       }
-                      return null;
-                    })}
+                      
+                      return (
+                        <>
+                          {displayLines.map((line, index) => {
+                            // Check if line is a bullet point
+                            if (line.trim().startsWith('- ')) {
+                              return (
+                                <ul key={index} className="list-disc list-inside">
+                                  <li className="text-gray-800">
+                                    {line.trim().substring(2)}
+                                  </li>
+                                </ul>
+                              );
+                            } else if (line.trim()) {
+                              // Regular non-empty line
+                              return (
+                                <p key={index} className="text-gray-800">
+                                  {line}
+                                </p>
+                              );
+                            }
+                            return null;
+                          })}
+                          
+                          {shouldTruncate && (
+                            <button
+                              onClick={() => setIsExpanded(!isExpanded)}
+                              className="text-xs text-gray-500 hover:text-gray-700 font-mono mt-2 transition-colors duration-200"
+                            >
+                              {isExpanded ? 'read less' : 'read more...'}
+                            </button>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               )}

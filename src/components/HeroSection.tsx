@@ -87,9 +87,28 @@ export default function HeroSection() {
 
               {!loading && !error && upToLately && (
                 <div className="p-4 border-2 border-black rounded-2xl bg-gray-50">
-                  <p className="text-sm text-gray-800 leading-relaxed">
-                    {upToLately.text}
-                  </p>
+                  <div className="text-sm text-gray-800 leading-relaxed space-y-2">
+                    {upToLately.text.split('\n').map((line, index) => {
+                      // Check if line is a bullet point
+                      if (line.trim().startsWith('- ')) {
+                        return (
+                          <ul key={index} className="list-disc list-inside">
+                            <li className="text-gray-800">
+                              {line.trim().substring(2)}
+                            </li>
+                          </ul>
+                        );
+                      } else if (line.trim()) {
+                        // Regular non-empty line
+                        return (
+                          <p key={index} className="text-gray-800">
+                            {line}
+                          </p>
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
                 </div>
               )}
 

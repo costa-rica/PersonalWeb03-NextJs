@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Navigation from "./Navigation";
 import Image from "next/image";
+import ModalDisplayPicture from "./ModalDisplayPicture";
 
 interface UpToLately {
   text: string;
@@ -23,6 +24,7 @@ export default function HeroSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Helper function to count words
   const countWords = (text: string): number => {
@@ -206,7 +208,10 @@ export default function HeroSection() {
         </div>
 
         {/* Right side - Photo */}
-        <div className="w-3/5 mx-auto mb-8 rounded-2xl overflow-hidden aspect-[4/3] lg:w-auto lg:mx-0 lg:mb-0 lg:flex-1 lg:aspect-auto lg:h-auto relative lg:border-l-2 border-black order-2 lg:order-2">
+        <div 
+          className="w-3/5 mx-auto mb-8 rounded-2xl overflow-hidden aspect-[4/3] lg:w-auto lg:mx-0 lg:mb-0 lg:flex-1 lg:aspect-auto lg:h-auto relative lg:border-l-2 border-black order-2 lg:order-2 cursor-pointer transition-opacity hover:opacity-95"
+          onClick={() => setIsModalOpen(true)}
+        >
           <Image
             src="/montmartre2021.jpg"
             alt="Nick's portrait"
@@ -216,6 +221,13 @@ export default function HeroSection() {
           />
         </div>
       </div>
+      
+      <ModalDisplayPicture 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        src="/montmartre2021.jpg" 
+        alt="Nick's portrait" 
+      />
     </section>
   );
 }

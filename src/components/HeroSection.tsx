@@ -77,12 +77,7 @@ export default function HeroSection() {
             {/* Recent Activity */}
             <div className="space-y-4 order-3 lg:order-2">
               <h2 className="text-lg font-mono text-gray-800">
-                what I&apos;ve been up to lately
-                {upToLately && (
-                  <span className="text-sm text-gray-500 font-normal ml-2">
-                    (updated {upToLately.datetime_summary})
-                  </span>
-                )}
+                What I&apos;ve been up to lately
               </h2>
 
               {/* Up to Lately Text Section */}
@@ -109,12 +104,29 @@ export default function HeroSection() {
                       // Split text into lines
                       const lines = upToLately.text.split('\n');
                       
-                      // If we should truncate and not expanded, get first 50 words
+                      // If we should truncate and not expanded, preserve line structure
                       let displayLines = lines;
                       if (shouldTruncate && !isExpanded) {
-                        const words = upToLately.text.split(/\s+/);
-                        const truncatedText = words.slice(0, TRUNCATE_WORD_COUNT).join(' ');
-                        displayLines = truncatedText.split('\n');
+                        // Accumulate lines until we reach word limit
+                        let wordsSoFar = 0;
+                        displayLines = [];
+                        
+                        for (const line of lines) {
+                          const lineWordCount = countWords(line);
+                          if (wordsSoFar + lineWordCount <= TRUNCATE_WORD_COUNT) {
+                            displayLines.push(line);
+                            wordsSoFar += lineWordCount;
+                          } else {
+                            // If we have room for partial line, add it
+                            if (wordsSoFar < TRUNCATE_WORD_COUNT) {
+                              const wordsNeeded = TRUNCATE_WORD_COUNT - wordsSoFar;
+                              const lineWords = line.trim().split(/\s+/);
+                              const partialLine = lineWords.slice(0, wordsNeeded).join(' ');
+                              displayLines.push(partialLine);
+                            }
+                            break;
+                          }
+                        }
                       }
                       
                       return (
@@ -155,7 +167,7 @@ export default function HeroSection() {
                 </div>
               )}
 
-              {!loading && !error && togglTable.length > 0 && (
+              {!loading && !error && togglTable.length > 0 && upToLately && (isExpanded || countWords(upToLately.text) <= TRUNCATE_WORD_COUNT) && (
                 <div className="border-2 border-black rounded-2xl overflow-hidden bg-gray-50">
                   <table className="w-full font-mono text-sm">
                     <thead>
@@ -178,6 +190,15 @@ export default function HeroSection() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              )}
+
+              {/* Last Updated Date */}
+              {!loading && !error && upToLately && (
+                <div className="text-right">
+                  <span className="text-xs text-gray-400 font-mono">
+                    (updated {upToLately.datetime_summary})
+                  </span>
                 </div>
               )}
             </div>

@@ -7,9 +7,11 @@ export default function HomePage() {
   return (
     <main className="bg-white">
       <HeroSection />
+      
       <ProjectsSection />
-      <ResumeSection />
       <BlogSection />
+      <ResumeSection />
+      
     </main>
   );
 }

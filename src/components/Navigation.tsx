@@ -19,11 +19,11 @@ export default function Navigation() {
         >
           projects
         </Link>
-        <Link href="#resume" className="hover:text-gray-600 transition-colors">
-          resume
-        </Link>
         <Link href="#blog" className="hover:text-gray-600 transition-colors">
           blog
+        </Link>
+        <Link href="#resume" className="hover:text-gray-600 transition-colors">
+          resume
         </Link>
         {token && (
           <Link

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,12 +13,7 @@ import { forgotPassword } from "@/lib/api/auth";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import Modal from "@/components/ui/modal";
 import ModalInformationOk from "@/components/ui/modal/ModalInformationOk";
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
-});
-
-type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+import { forgotPasswordSchema, type ForgotPasswordFormData } from "@/lib/validationSchemas";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();

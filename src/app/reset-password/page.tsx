@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,12 +13,7 @@ import { resetPassword } from "@/lib/api/auth";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import Modal from "@/components/ui/modal";
 import ModalInformationOk from "@/components/ui/modal/ModalInformationOk";
-
-const resetPasswordSchema = z.object({
-  password: z.string().min(2, "Password must be at least 2 characters"),
-});
-
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/validationSchemas";
 
 export default function ResetPasswordPage() {
   const router = useRouter();

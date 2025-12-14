@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,13 +12,7 @@ import { Label } from "@/components/ui/label";
 import { registerUser } from "@/lib/api/auth";
 import { useAppDispatch } from "@/lib/hooks";
 import { setUser } from "@/lib/features/userSlice";
-
-const registerSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(2, "Password must be at least 2 characters"),
-});
-
-type RegisterFormData = z.infer<typeof registerSchema>;
+import { registerSchema, type RegisterFormData } from "@/lib/validationSchemas";
 
 export default function RegisterPage() {
   const router = useRouter();

@@ -13,6 +13,7 @@ import { loginUser } from "@/lib/api/auth";
 import { useAppDispatch } from "@/lib/hooks";
 import { setUser } from "@/lib/features/userSlice";
 import { loginSchema, type LoginFormData } from "@/lib/validationSchemas";
+import { logAuthEvent, logValidationFailure } from "@/lib/securityLogger";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,9 +26,20 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
+  // SECURITY: Log validation failures
+  if (Object.keys(errors).length > 0) {
+    const errorMessages: Record<string, string> = {};
+    Object.entries(errors).forEach(([key, value]) => {
+      if (value?.message) errorMessages[key] = value.message;
+    });
+    
+    logValidationFailure('/login', errorMessages, getValues());
+  }
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
@@ -35,6 +47,9 @@ export default function LoginPage() {
 
     try {
       const response = await loginUser(data);
+
+      // SECURITY: Log successful authentication
+      logAuthEvent('AUTHENTICATION_SUCCESS', true, data.email);
 
       // Store token and email in Redux
       dispatch(
@@ -47,6 +62,11 @@ export default function LoginPage() {
       // Redirect to home
       router.push("/");
     } catch (err) {
+      // SECURITY: Log failed authentication
+      logAuthEvent('AUTHENTICATION_FAILURE', false, data.email, {
+        error: err instanceof Error ? err.message : 'Unknown error',
+      });
+
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setIsLoading(false);

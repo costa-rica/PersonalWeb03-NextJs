@@ -13,6 +13,7 @@ import { registerUser } from "@/lib/api/auth";
 import { useAppDispatch } from "@/lib/hooks";
 import { setUser } from "@/lib/features/userSlice";
 import { registerSchema, type RegisterFormData } from "@/lib/validationSchemas";
+import { logAuthEvent, logValidationFailure } from "@/lib/securityLogger";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -25,9 +26,20 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
+
+  // SECURITY: Log validation failures
+  if (Object.keys(errors).length > 0) {
+    const errorMessages: Record<string, string> = {};
+    Object.entries(errors).forEach(([key, value]) => {
+      if (value?.message) errorMessages[key] = value.message;
+    });
+    
+    logValidationFailure('/register', errorMessages, getValues());
+  }
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
@@ -35,6 +47,9 @@ export default function RegisterPage() {
 
     try {
       const response = await registerUser(data);
+
+      // SECURITY: Log successful registration
+      logAuthEvent('REGISTRATION_SUCCESS', true, data.email);
 
       // Store token and email in Redux
       dispatch(
@@ -47,6 +62,11 @@ export default function RegisterPage() {
       // Redirect to home
       router.push("/");
     } catch (err) {
+      // SECURITY: Log failed registration
+      logAuthEvent('REGISTRATION_FAILURE', false, data.email, {
+        error: err instanceof Error ? err.message : 'Unknown error',
+      });
+
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setIsLoading(false);

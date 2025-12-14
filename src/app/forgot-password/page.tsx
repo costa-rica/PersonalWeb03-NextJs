@@ -14,6 +14,7 @@ import LoadingOverlay from "@/components/LoadingOverlay";
 import Modal from "@/components/ui/modal";
 import ModalInformationOk from "@/components/ui/modal/ModalInformationOk";
 import { forgotPasswordSchema, type ForgotPasswordFormData } from "@/lib/validationSchemas";
+import { logAuthEvent, logValidationFailure } from "@/lib/securityLogger";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -35,9 +36,20 @@ export default function ForgotPasswordPage() {
     handleSubmit,
     formState: { errors },
     reset,
+    getValues,
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
   });
+
+  // SECURITY: Log validation failures
+  if (Object.keys(errors).length > 0) {
+    const errorMessages: Record<string, string> = {};
+    Object.entries(errors).forEach(([key, value]) => {
+      if (value?.message) errorMessages[key] = value.message;
+    });
+    
+    logValidationFailure('/forgot-password', errorMessages, getValues());
+  }
 
   const handleCloseModal = () => {
     setModalState({
@@ -59,6 +71,9 @@ export default function ForgotPasswordPage() {
     try {
       const response = await forgotPassword(data.email);
 
+      // SECURITY: Log password reset request
+      logAuthEvent('PASSWORD_RESET_REQUEST', true, data.email);
+
       setModalState({
         isOpen: true,
         type: "success",
@@ -67,6 +82,11 @@ export default function ForgotPasswordPage() {
       });
       reset();
     } catch (err) {
+      // SECURITY: Log failed password reset request
+      logAuthEvent('PASSWORD_RESET_REQUEST', false, data.email, {
+        error: err instanceof Error ? err.message : 'Unknown error',
+      });
+
       setModalState({
         isOpen: true,
         type: "error",

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { logValidationFailure } from './securityLogger';
 
 // SECURITY: Email validation with strict requirements
 const emailSchema = z

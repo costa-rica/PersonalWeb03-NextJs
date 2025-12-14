@@ -14,6 +14,7 @@ import LoadingOverlay from "@/components/LoadingOverlay";
 import Modal from "@/components/ui/modal";
 import ModalInformationOk from "@/components/ui/modal/ModalInformationOk";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/validationSchemas";
+import { logAuthEvent, logValidationFailure } from "@/lib/securityLogger";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -37,9 +38,20 @@ export default function ResetPasswordPage() {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
   });
+
+  // SECURITY: Log validation failures
+  if (Object.keys(errors).length > 0) {
+    const errorMessages: Record<string, string> = {};
+    Object.entries(errors).forEach(([key, value]) => {
+      if (value?.message) errorMessages[key] = value.message;
+    });
+    
+    logValidationFailure('/reset-password', errorMessages, getValues());
+  }
 
   useEffect(() => {
     const tokenParam = searchParams.get("token");
@@ -87,6 +99,11 @@ export default function ResetPasswordPage() {
     try {
       const response = await resetPassword(token, data.password);
 
+      // SECURITY: Log successful password reset
+      logAuthEvent('PASSWORD_RESET_SUCCESS', true, undefined, {
+        hasToken: !!token,
+      });
+
       setModalState({
         isOpen: true,
         type: "success",
@@ -94,6 +111,12 @@ export default function ResetPasswordPage() {
         message: response.message,
       });
     } catch (err) {
+      // SECURITY: Log failed password reset
+      logAuthEvent('PASSWORD_RESET_SUCCESS', false, undefined, {
+        error: err instanceof Error ? err.message : 'Unknown error',
+        hasToken: !!token,
+      });
+
       setModalState({
         isOpen: true,
         type: "error",
